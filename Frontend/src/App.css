@@ -12,7 +12,7 @@
   height: 300px;
   overflow-y: auto;
   margin-bottom: 1rem;
-  background: rgb(230, 230, 234);
+  background: rgb(226, 226, 229);
 }
 
 .chat-message {
@@ -24,8 +24,16 @@
 .chat-message{
   margin-bottom: 0.5rem;
 }
-
-.chat-timestamp {
+.chat-sys{
+  color: red;
+}
+.btn{
+  background-color: blue;
+}
+.chat-timestap {
   color: #140909;
   margin-right: 0.5rem;
+}
+chat-empty {
+  color: #100d0d
 }

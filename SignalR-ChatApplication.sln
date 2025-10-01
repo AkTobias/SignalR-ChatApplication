@@ -2,7 +2,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.2.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SignalRChat", "Server\SignalRChat.csproj", "{30D44D7D-6408-F47A-FF2F-E4F29FD51039}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server", "Server\Server.csproj", "{30D44D7D-6408-F47A-FF2F-E4F29FD51039}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
