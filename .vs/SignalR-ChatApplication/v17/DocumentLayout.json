@@ -1,0 +1,69 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\tobyg\\Desktop\\Inl\u00E4mingsuppgift\\SignalR-ChatApplication\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{30D44D7D-6408-F47A-FF2F-E4F29FD51039}|Server\\SignalRChat.csproj|c:\\users\\tobyg\\desktop\\inl\u00E4mingsuppgift\\signalr-chatapplication\\server\\signalrchat.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{30D44D7D-6408-F47A-FF2F-E4F29FD51039}|Server\\SignalRChat.csproj|solutionrelative:server\\signalrchat.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 8,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:135:0:{75188d03-9892-4ae2-abf1-207126247ce5}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:130:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:131:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c64b9c2-e352-428e-a56d-0ace190b99a6}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{c9c0ae26-aa77-11d2-b3f0-0000f87570ee}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:129:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "SignalRChat",
+              "DocumentMoniker": "C:\\Users\\tobyg\\Desktop\\Inl\u00E4mingsuppgift\\SignalR-ChatApplication\\Server\\SignalRChat.csproj",
+              "RelativeDocumentMoniker": "Server\\SignalRChat.csproj",
+              "ToolTip": "C:\\Users\\tobyg\\Desktop\\Inl\u00E4mingsuppgift\\SignalR-ChatApplication\\Server\\SignalRChat.csproj",
+              "RelativeToolTip": "Server\\SignalRChat.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2025-10-01T11:34:24.432Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
