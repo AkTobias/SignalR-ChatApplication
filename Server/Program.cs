@@ -1,4 +1,5 @@
 using System.Text.Encodings.Web;
+using Microsoft.AspNetCore.Http.Connections;
 using SignalRChat.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,7 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 //
 builder.WebHost.ConfigureKestrel(o =>
 {
-    o.ListenLocalhost(5172);
+    //o.ListenLocalhost(5172);
     o.ListenLocalhost(5001, o => o.UseHttps());
 });
 
