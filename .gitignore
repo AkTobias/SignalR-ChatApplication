@@ -1,13 +1,23 @@
-cat > .gitignore << 'EOF'
-# .NET
+# .NET / Visual Studio
 **/bin/
 **/obj/
+.vs/
 *.user
 *.suo
+*.rsuser
+TestResults/
 
 # React / Vite
 node_modules/
 dist/
+.vite/
+
+# Logs
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
 
 # Local config / secrets / certs
 .env
@@ -15,7 +25,8 @@ dist/
 certs/*.pem
 *.pfx
 
-# OS junk
+# Editors / OS
 .DS_Store
 Thumbs.db
-EOF
+.idea/
+# .vscode/    # (optional to ignore; keep if you share workspace settings)
