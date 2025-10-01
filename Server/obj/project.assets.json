@@ -1485,9 +1485,9 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\tobyg\\Desktop\\Inlämingsuppgift\\SignalR-ChatApplication\\Server\\SignalRChat.csproj",
-      "projectName": "SignalRChat",
-      "projectPath": "C:\\Users\\tobyg\\Desktop\\Inlämingsuppgift\\SignalR-ChatApplication\\Server\\SignalRChat.csproj",
+      "projectUniqueName": "C:\\Users\\tobyg\\Desktop\\Inlämingsuppgift\\SignalR-ChatApplication\\Server\\Server.csproj",
+      "projectName": "Server",
+      "projectPath": "C:\\Users\\tobyg\\Desktop\\Inlämingsuppgift\\SignalR-ChatApplication\\Server\\Server.csproj",
       "packagesPath": "C:\\Users\\tobyg\\.nuget\\packages\\",
       "outputPath": "C:\\Users\\tobyg\\Desktop\\Inlämingsuppgift\\SignalR-ChatApplication\\Server\\obj\\",
       "projectStyle": "PackageReference",

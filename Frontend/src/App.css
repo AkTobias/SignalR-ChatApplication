@@ -1,42 +1,31 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+
+.chat-container {
+  max-width: 500px;
+  margin: 2rem auto;
+  font-family: sans-serif;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.chat-log {
+  border: 1px solid black;
+  border-radius: 8px;
+  padding: 1rem;
+  height: 300px;
+  overflow-y: auto;
+  margin-bottom: 1rem;
+  background: rgb(230, 230, 234);
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.chat-message {
+  color: black;
+  text-align: left;
+
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+.chat-message{
+  margin-bottom: 0.5rem;
 }
 
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
+.chat-timestamp {
+  color: #140909;
+  margin-right: 0.5rem;
 }
