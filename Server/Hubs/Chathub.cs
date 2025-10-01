@@ -17,6 +17,7 @@ namespace SignalRChat.Hubs
         {
             username = (username ?? string.Empty).Trim();
 
+
             if (string.IsNullOrWhiteSpace(username))
             {
                 throw new HubException("You have to enter username");
@@ -36,7 +37,7 @@ namespace SignalRChat.Hubs
         {
             if (!Context.Items.TryGetValue(UsernameKey, out var userObj) || userObj is not string username)
             {
-                throw new HubException("Du måste ange användar namn innan du kan skriva");
+                throw new HubException("You have to enter a username if you want to write.");
             }
 
             var safeMessage = Html.Encode(message ?? string.Empty);
