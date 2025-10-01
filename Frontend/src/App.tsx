@@ -25,6 +25,8 @@ function App() {
    const [log, setLog] = useState<Message[]>([]);
    const EndRef = useRef<HTMLDivElement | null>(null);
 
+   //const [connectionId, setConnectionId] = useState<string | null>(null);
+
    //-- helpers
    const appendMessage = useCallback((m: Message) => {
       setLog((prev) => [...prev, m]);
@@ -50,9 +52,8 @@ function App() {
    useEffect(() => {
       let alive = true;
 
-      const onConnected = (cid: string) => {
+      const onConnected = () => {
          setStatus("connected");
-         //appendSystem(`Connected (${cid})`);
       };
 
       const onRegister = (safeName: string) => {
