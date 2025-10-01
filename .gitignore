@@ -1,0 +1,21 @@
+cat > .gitignore << 'EOF'
+# .NET
+**/bin/
+**/obj/
+*.user
+*.suo
+
+# React / Vite
+node_modules/
+dist/
+
+# Local config / secrets / certs
+.env
+**/.env
+certs/*.pem
+*.pfx
+
+# OS junk
+.DS_Store
+Thumbs.db
+EOF
