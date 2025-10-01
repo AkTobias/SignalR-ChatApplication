@@ -25,3 +25,9 @@ C:\Users\tobyg\Desktop\Inlämingsuppgift\SignalR-ChatApplication\SignalRChat\obj
 C:\Users\tobyg\Desktop\Inlämingsuppgift\SignalR-ChatApplication\SignalRChat\obj\Debug\net9.0\SignalRChat.pdb
 C:\Users\tobyg\Desktop\Inlämingsuppgift\SignalR-ChatApplication\SignalRChat\obj\Debug\net9.0\SignalRChat.genruntimeconfig.cache
 C:\Users\tobyg\Desktop\Inlämingsuppgift\SignalR-ChatApplication\SignalRChat\obj\Debug\net9.0\ref\SignalRChat.dll
+C:\Users\tobyg\Desktop\Inlämingsuppgift\SignalR-ChatApplication\SignalRChat\bin\Debug\net9.0\SignalRChat.staticwebassets.runtime.json
+C:\Users\tobyg\Desktop\Inlämingsuppgift\SignalR-ChatApplication\SignalRChat\bin\Debug\net9.0\Newtonsoft.Json.dll
+C:\Users\tobyg\Desktop\Inlämingsuppgift\SignalR-ChatApplication\SignalRChat\bin\Debug\net9.0\System.Net.WebSockets.WebSocketProtocol.dll
+C:\Users\tobyg\Desktop\Inlämingsuppgift\SignalR-ChatApplication\SignalRChat\obj\Debug\net9.0\SignalRChat.csproj.AssemblyReference.cache
+C:\Users\tobyg\Desktop\Inlämingsuppgift\SignalR-ChatApplication\SignalRChat\obj\Debug\net9.0\SignalRChat.sourcelink.json
+C:\Users\tobyg\Desktop\Inlämingsuppgift\SignalR-ChatApplication\SignalRChat\obj\Debug\net9.0\SignalRC.5F9AC61D.Up2Date
