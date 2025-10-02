@@ -4,6 +4,7 @@ import * as signalR from "@microsoft/signalr";
 import { ensureHubStarted, hub } from "./signalR";
 
 //import { hub, ensureHubStarted } from "./signalr";
+//aaaaaaaaaaa
 
 type ChatMessage = { kind: "chat"; user: string; message: string; ts: string };
 type SystemMessage = {

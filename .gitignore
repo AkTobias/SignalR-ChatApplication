@@ -30,3 +30,5 @@ certs/*.pem
 Thumbs.db
 .idea/
 # .vscode/    # (optional to ignore; keep if you share workspace settings)
+
+.fake
