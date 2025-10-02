@@ -1,5 +1,6 @@
 using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Http.Connections;
+using Server.Cryptography;
 using SignalRChat.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,6 +28,8 @@ builder.Services.AddCors(options =>
 // 
 builder.Services.AddSignalR();
 builder.Services.AddSingleton(HtmlEncoder.Default);
+
+builder.Services.AddSingleton<ICryptoAes, CryptoAes>();
 
 var app = builder.Build();
 
