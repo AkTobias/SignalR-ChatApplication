@@ -1,4 +1,5 @@
 using System.Text.Encodings.Web;
+using System.Text.Unicode;
 using Microsoft.AspNetCore.Http.Connections;
 using Server.Cryptography;
 using SignalRChat.Hubs;
@@ -6,7 +7,9 @@ using SignalRChat.Hubs;
 var builder = WebApplication.CreateBuilder(args);
 
 
-//
+
+
+
 builder.WebHost.ConfigureKestrel(o =>
 {
     //o.ListenLocalhost(5172);
@@ -25,9 +28,18 @@ builder.Services.AddCors(options =>
 });
 
 
-// 
+
+
 builder.Services.AddSignalR();
-builder.Services.AddSingleton(HtmlEncoder.Default);
+
+builder.Services.AddWebEncoders(o =>
+{
+    o.TextEncoderSettings = new TextEncoderSettings(
+        UnicodeRanges.Latin1Supplement,
+        UnicodeRanges.BasicLatin,
+        UnicodeRanges.LatinExtendedA);
+});
+
 
 //builder.Services.AddSingleton<CryptoAes>();
 builder.Services.AddSingleton<byte[]>(sp =>
