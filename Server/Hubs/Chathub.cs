@@ -36,6 +36,7 @@ namespace SignalRChat.Hubs
                 throw new HubException("You have to enter a valid username ");
             }
 
+        
             var safeName = _encoder.Encode(username);
 
             Context.Items[UsernameKey] = safeName;
@@ -59,8 +60,6 @@ namespace SignalRChat.Hubs
 
             await Clients.All.SendAsync("MessageReceived", user, ivB64, payloadB64, DateTimeOffset.UtcNow);
 
-
-
         }
 
         public override async Task OnConnectedAsync()
@@ -68,7 +67,6 @@ namespace SignalRChat.Hubs
             await Clients.Caller.SendAsync("Connected", Context.ConnectionId);
             await base.OnConnectedAsync();
         }
-
 
 
         public override async Task OnDisconnectedAsync(Exception? exception)
