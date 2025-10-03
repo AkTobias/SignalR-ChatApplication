@@ -1,0 +1,75 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Security.Cryptography;
+using System.Text;
+
+
+namespace Server.Cryptography
+{
+
+    public sealed class CryptoAes
+    {
+
+
+        private const int IvSize = 12;
+        private const int TagSize = 16;
+
+        public static (string ivB64, string payloadB64) Encrypt(string plaintext, byte[] key)
+        {
+            var iv = RandomNumberGenerator.GetBytes(IvSize);
+            var plain = Encoding.UTF8.GetBytes(plaintext);
+            var cipher = new byte[plain.Length];
+            var tag = new byte[TagSize];
+
+            using var aes = new AesGcm(key, TagSize);
+            aes.Encrypt(iv, plain, cipher, tag);
+
+            var paylaod = new byte[cipher.Length + tag.Length];
+            Buffer.BlockCopy(cipher, 0, paylaod, 0, cipher.Length);
+            Buffer.BlockCopy(tag, 0, paylaod, cipher.Length, tag.Length);
+
+            return (Convert.ToBase64String(iv), Convert.ToBase64String(paylaod));
+        }
+
+    }
+}
+
+/*
+public string Encrypt(string plaintext)
+{
+    var InitializationVector = RandomNumberGenerator.GetBytes(IvSize);
+    var plain = Encoding.UTF8.GetBytes(plaintext);
+    var cipher = new byte[plain.Length];
+    var tag = new byte[TagSize];
+
+    using var aes = new AesGcm(_key, TagSize);
+    aes.Encrypt(InitializationVector, plain, cipher, tag);
+
+    var payload = new byte[IvSize + cipher.Length + TagSize];
+    Buffer.BlockCopy(InitializationVector, 0, payload, 0, IvSize);
+    Buffer.BlockCopy(cipher, 0, payload, IvSize, cipher.Length);
+    Buffer.BlockCopy(tag, 0, payload, IvSize, TagSize);
+
+    return Convert.ToBase64String(payload);
+
+}
+
+
+/*
+public string Decrypt(string base64)
+{
+var all = Convert.FromBase64String(base64);
+if (all.Length < 12 + 16) throw new CryptographicException("Invalid payload");
+var InitializationVector = new ReadOnlySpan<byte>(all, 0, 12);
+var body = new ReadOnlySpan<byte>(all, 12, all.Length - 12);
+var tag = body.Slice(body.Length - 16, 16);
+var ciphertext = body.Slice(0, body.Length - 16);
+var plain = new byte[ciphertext.Length];
+using var aes = new AesGcm(_key, TagSize);
+aes.Decrypt(InitializationVector, ciphertext, tag, plain);
+return Encoding.UTF8.GetString(plain);
+}
+*/
+

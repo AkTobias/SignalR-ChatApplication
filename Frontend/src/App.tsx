@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import "./App.css";
 import * as signalR from "@microsoft/signalr";
 import { ensureHubStarted, hub } from "./signalR";
+import { decryptAesGcmFromBase64, initAesKeyFromBase64 } from "./crytoAes";
 
 //import { hub, ensureHubStarted } from "./signalr";
 //aaaaaaaaaaa
@@ -53,8 +54,15 @@ function App() {
    useEffect(() => {
       let alive = true;
 
-      const onConnected = () => {
+      const onConnected = async () => {
          setStatus("connected");
+         try {
+            await initAesKeyFromBase64(
+               "97ZBxEEvCz4ernqTAAmXAgtbERQu8N7RU+08XvR4Xe0="
+            );
+         } catch (e: any) {
+            appendSystem(`Failed to init aes key: ${e?.message ?? e} `);
+         }
       };
 
       const onRegister = (safeName: string) => {
@@ -66,17 +74,34 @@ function App() {
       const onLeft = (safeName: string) =>
          appendSystem(`${safeName} left the chat`);
 
-      const onMessage = (
+      const onMessage = async (
          user: string,
-         safeMessage: string,
+         ivB64: string,
+         payloadB64: string,
+         //safeMessage: string,
          at: string | number | Date
       ) => {
+         try {
+            const plaintext = await decryptAesGcmFromBase64(ivB64, payloadB64);
+            const ts =
+               typeof at === "string" || typeof at === "number"
+                  ? new Date(at).toISOString()
+                  : at.toISOString();
+            appendMessage({ kind: "chat", user, message: plaintext, ts });
+         } catch (e: any) {
+            appendSystem(`Decrypt failed: ${e?.message ?? e}`);
+         }
+      };
+
+      /*{
          const ts =
             typeof at === "string" || typeof at === "number"
                ? new Date(at).toISOString()
                : at.toISOString();
          appendMessage({ kind: "chat", user, message: safeMessage, ts });
+         
       };
+      */
 
       hub.on("Connected", onConnected);
       hub.on("Register", onRegister);
@@ -91,6 +116,9 @@ function App() {
       (async () => {
          setStatus("connecting");
          try {
+            await initAesKeyFromBase64(
+               "97ZBxEEvCz4ernqTAAmXAgtbERQu8N7RU+08XvR4Xe0="
+            );
             await ensureHubStarted();
             if (alive && hub.state === signalR.HubConnectionState.Connected) {
                setStatus("connected");
