@@ -29,7 +29,9 @@ builder.Services.AddCors(options =>
 builder.Services.AddSignalR();
 builder.Services.AddSingleton(HtmlEncoder.Default);
 
-builder.Services.AddSingleton<ICryptoAes, CryptoAes>();
+//builder.Services.AddSingleton<CryptoAes>();
+builder.Services.AddSingleton<byte[]>(sp =>
+    Convert.FromBase64String("97ZBxEEvCz4ernqTAAmXAgtbERQu8N7RU+08XvR4Xe0="));
 
 var app = builder.Build();
 
