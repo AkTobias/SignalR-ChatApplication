@@ -10,18 +10,20 @@ import RegisterForm from "./components/registerForm";
 import ChatInputRow from "./components/chatInputRow";
 
 function App() {
-   const { status, connected, registeredAs, log, register, send } =
-      useChatConnection({
-         aesKeyB64: "97ZBxEEvCz4ernqTAAmXAgtbERQu8N7RU+08XvR4Xe0=",
-      });
+   const { status, connected, log, register, send } = useChatConnection({
+      aesKeyB64: "97ZBxEEvCz4ernqTAAmXAgtbERQu8N7RU+08XvR4Xe0=",
+   });
    // check {registeredAs || null}
    return (
       <div className="chat-container">
-         <h1>SignalR chat</h1>
+         <div className="chat-header">
+            {" "}
+            <h1>SignalR chat</h1>
+            <StatusBar status={status} />
+         </div>
 
          <div className="chat-row">
             <RegisterForm onRegister={register} connected={connected} />
-            <StatusBar status={status} registeredAs={registeredAs ?? null} />
          </div>
 
          <MessageList log={log} />

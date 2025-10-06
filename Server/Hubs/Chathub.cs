@@ -47,22 +47,7 @@ namespace SignalRChat.Hubs
             await Clients.Others.SendAsync("UserJoined", safeName, Context.ConnectionId);
 
         }
-        /*
-        public async Task SendMessage(string message)
-        {
-            if (!Context.Items.TryGetValue(UsernameKey, out var userObj) || userObj is not string user)
-            {
-                throw new HubException("You have to enter a valid username if you want to send a message");
-            }
-            //maybe add "" ? 
-            var safe = _encoder.Encode(message);
-            var (ivB64, payloadB64) = CryptoAes.Encrypt(safe, _aesKey);
 
-
-            await Clients.All.SendAsync("MessageReceived", user, ivB64, payloadB64, DateTimeOffset.UtcNow);
-
-        }
-        */
         public async Task SendMessageEncrypted(string ivB64, string payloadB64)
         {
             if (!Context.Items.TryGetValue(UsernameKey, out var userObj) || userObj is not string user)
@@ -78,10 +63,10 @@ namespace SignalRChat.Hubs
                 throw new HubException("Invalid ciphertext or key.");
             }
 
-            // Sanitize on the server (never trust client input)
+
             var safe = _encoder.Encode(plaintext);
 
-            // Re-encrypt with a fresh IV before broadcasting
+
             var (outIvB64, outPayloadB64) = CryptoAes.Encrypt(safe, _aesKey);
 
             await Clients.All.SendAsync("MessageReceived", user, outIvB64, outPayloadB64, DateTimeOffset.UtcNow);

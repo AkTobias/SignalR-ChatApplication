@@ -103,7 +103,7 @@ export function useChatConnection({aesKeyB64} : UseChatConnectionOptions) {
            hub.off("Connected", onConnected);
             hub.off("Register", onRegister);
             hub.off("UserJoined", onJoined);
-            hub.off("userLeft", onLeft);
+            hub.off("UserLeft", onLeft);
             hub.off("MessageReceived", onMessage);
         };
     }, [aesKeyB64, appendMessage, appendSystem]);
