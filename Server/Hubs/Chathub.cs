@@ -5,7 +5,6 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
-using System.Text.Encodings.Web;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
@@ -16,16 +15,15 @@ namespace SignalRChat.Hubs
     public class Chathub : Hub
     {
 
-        private const string UsernameKey = "username";
         private readonly byte[] _aesKey = Convert.FromBase64String("97ZBxEEvCz4ernqTAAmXAgtbERQu8N7RU+08XvR4Xe0=");
-        //private static readonly HtmlEncoder Html = HtmlEncoder.Default;
-        private readonly HtmlEncoder _encoder;
 
-        private static readonly Regex usernameFormat = new(@"^[\p{L}\p{N}\s._-]{1,32}$");
-        public Chathub(byte[] aesKey, HtmlEncoder encoder)
+
+        private static readonly Regex usernameFormat =
+            new(@"^[\p{L}\p{N} _\.\-]{1,32}$", RegexOptions.CultureInvariant);
+        public Chathub(byte[] aesKey)
         {
             _aesKey = aesKey;
-            _encoder = encoder;
+
         }
 
 
@@ -37,20 +35,18 @@ namespace SignalRChat.Hubs
                 throw new HubException("You have to enter a valid username ");
             }
 
+            Context.Items["username"] = username;
 
-            var safeName = _encoder.Encode(username);
 
-            Context.Items[UsernameKey] = safeName;
+            await Clients.Caller.SendAsync("Register", username);
 
-            await Clients.Caller.SendAsync("Register", safeName);
-
-            await Clients.Others.SendAsync("UserJoined", safeName, Context.ConnectionId);
+            await Clients.Others.SendAsync("UserJoined", username, Context.ConnectionId);
 
         }
 
         public async Task SendMessageEncrypted(string ivB64, string payloadB64)
         {
-            if (!Context.Items.TryGetValue(UsernameKey, out var userObj) || userObj is not string user)
+            if (!Context.Items.TryGetValue("username", out var userObj) || userObj is not string user)
                 throw new HubException("You have to enter a valid username if you want to send a message");
 
             string plaintext;
@@ -64,10 +60,8 @@ namespace SignalRChat.Hubs
             }
 
 
-            var safe = _encoder.Encode(plaintext);
 
-
-            var (outIvB64, outPayloadB64) = CryptoAes.Encrypt(safe, _aesKey);
+            var (outIvB64, outPayloadB64) = CryptoAes.Encrypt(plaintext, _aesKey);
 
             await Clients.All.SendAsync("MessageReceived", user, outIvB64, outPayloadB64, DateTimeOffset.UtcNow);
         }
@@ -86,7 +80,7 @@ namespace SignalRChat.Hubs
 
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
-            if (Context.Items.TryGetValue(UsernameKey, out var userObj) && userObj is string username)
+            if (Context.Items.TryGetValue("username", out var userObj) && userObj is string username)
             {
                 await Clients.Others.SendAsync("UserLeft", username, Context.ConnectionId);
             }
