@@ -6,6 +6,8 @@ import { decryptAesGcmFromBase64, encryptAesGcm, initAesKeyFromBase64 } from "..
 import { ensureHubStarted, hub } from "../signalR";
 import * as signalR from "@microsoft/signalr";
 
+//test
+
 
 interface UseChatConnectionOptions {
     aesKeyB64 : string
