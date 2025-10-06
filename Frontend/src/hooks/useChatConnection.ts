@@ -13,7 +13,7 @@ interface UseChatConnectionOptions {
 };
 
 
-const aesKeyB64 = "97ZBxEEvCz4ernqTAAmXAgtbERQu8N7RU+08XvR4Xe0=";
+//const aesKeyB64 = "97ZBxEEvCz4ernqTAAmXAgtbERQu8N7RU+08XvR4Xe0=";
 
 
 
@@ -57,7 +57,7 @@ export function useChatConnection({aesKeyB64} : UseChatConnectionOptions) {
         const onLieft = (safeName: string) => {
             appendSystem(`${safeName} has left the chat.`)
         }
-
+        
         const onMessage = async (
             user: string,
             ivB64: string,
@@ -122,7 +122,11 @@ export function useChatConnection({aesKeyB64} : UseChatConnectionOptions) {
 
     const send = useCallback(async (text: string) => {
         const t = text.trim();
-        if(!t || registeredAs) return;
+        if(!t) return;
+        if(!registeredAs){
+            alert("you have to login to send a message");
+            return;
+        }
         await hub.invoke("SendMessage", t);
     }, [registeredAs]);
 
