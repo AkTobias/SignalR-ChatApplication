@@ -32,15 +32,6 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddSignalR();
 
-builder.Services.AddWebEncoders(o =>
-{
-    o.TextEncoderSettings = new TextEncoderSettings(
-        UnicodeRanges.Latin1Supplement,
-        UnicodeRanges.BasicLatin,
-        UnicodeRanges.LatinExtendedA);
-});
-
-
 //builder.Services.AddSingleton<CryptoAes>();
 builder.Services.AddSingleton<byte[]>(sp =>
     Convert.FromBase64String("97ZBxEEvCz4ernqTAAmXAgtbERQu8N7RU+08XvR4Xe0="));
