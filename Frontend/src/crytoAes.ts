@@ -13,7 +13,7 @@ export async function initAesKeyFromBase64(b64: string): Promise<void>{
         raw,
         {name: "AES-GCM"},
         false,
-        ["decrypt"]
+        ["encrypt", "decrypt"]
     );
 }
 
@@ -24,4 +24,13 @@ export async function decryptAesGcmFromBase64(ivB64: string, payloadB64: string)
 
     const ptBuf = await crypto.subtle.decrypt({name: "AES-GCM", iv}, cachedKey, paylaod);
     return new TextDecoder().decode(new Uint8Array(ptBuf));
+}
+
+export async function encryptAesGcm(plaintext: string){
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    const pt = new TextEncoder().encode(plaintext);
+    const ctAndtag = new Uint8Array(await crypto.subtle.encrypt({name: "AES-GCM", iv}, cachedKey!, pt));
+    const ivB64 = btoa(String.fromCharCode(...iv));
+    const payloadB64 = btoa(String.fromCharCode(...ctAndtag));
+    return {ivB64, payloadB64};
 }

@@ -33,6 +33,23 @@ namespace Server.Cryptography
             return (Convert.ToBase64String(iv), Convert.ToBase64String(paylaod));
         }
 
+        public static string Decrypt(string ivB64, string payloadB64, byte[] key)
+        {
+            var iv = Convert.FromBase64String(ivB64);
+            var paylaod = Convert.FromBase64String(payloadB64);
+
+            var tag = new byte[TagSize];
+            var cipher = new byte[paylaod.Length - tag.Length];
+            Buffer.BlockCopy(paylaod, 0, cipher, 0, cipher.Length);
+            Buffer.BlockCopy(paylaod, cipher.Length, tag, 0, tag.Length);
+
+            var plain = new byte[cipher.Length];
+            using var aes = new AesGcm(key, TagSize);
+            aes.Decrypt(iv, cipher, tag, plain);
+            return Encoding.UTF8.GetString(plain);
+
+        }
+
     }
 }
 
