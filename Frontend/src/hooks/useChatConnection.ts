@@ -75,7 +75,7 @@ export function useChatConnection({aesKeyB64} : UseChatConnectionOptions) {
         hub.on("Connected", onConnected);
         hub.on("Register", onRegister);
         hub.on("UserJoined", onJoined);
-        hub.on("userLeft", onLeft);
+        hub.on("UserLeft", onLeft);
         hub.on("MessageReceived", onMessage);
 
         hub.onreconnecting(() => setStatus("connecting"));
