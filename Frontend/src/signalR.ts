@@ -4,7 +4,7 @@ import * as signalR from "@microsoft/signalr"
 export const hub = new signalR.HubConnectionBuilder()
 .withUrl("/chathub")
 .withAutomaticReconnect()
-.configureLogging(signalR.LogLevel.Information)
+.configureLogging(signalR.LogLevel.Trace)
 .build();
 
 export let starting = false;

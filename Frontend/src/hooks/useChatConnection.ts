@@ -2,19 +2,16 @@ import { useCallback, useEffect, useRef, useState } from "react";
 //import { ChatMessage } from "../types/chatMessageType";
 import type {Message} from "../types/chatMessageType";
 import type { ConnectionStatus } from "../types/connectionStatusType";
-import { decryptAesGcmFromBase64, initAesKeyFromBase64 } from "../crytoAes";
+import { decryptAesGcmFromBase64, encryptAesGcm, initAesKeyFromBase64 } from "../crytoAes";
 import { ensureHubStarted, hub } from "../signalR";
 import * as signalR from "@microsoft/signalr";
 
+//test
 
 
 interface UseChatConnectionOptions {
     aesKeyB64 : string
 };
-
-
-//const aesKeyB64 = "97ZBxEEvCz4ernqTAAmXAgtbERQu8N7RU+08XvR4Xe0=";
-
 
 
 export function useChatConnection({aesKeyB64} : UseChatConnectionOptions) {
@@ -54,7 +51,7 @@ export function useChatConnection({aesKeyB64} : UseChatConnectionOptions) {
         const onJoined = (safeName: string) => {
             appendSystem(`${safeName} has joined the chat.`);
         }
-        const onLieft = (safeName: string) => {
+        const onLeft = (safeName: string) => {
             appendSystem(`${safeName} has left the chat.`)
         }
         
@@ -78,7 +75,7 @@ export function useChatConnection({aesKeyB64} : UseChatConnectionOptions) {
         hub.on("Connected", onConnected);
         hub.on("Register", onRegister);
         hub.on("UserJoined", onJoined);
-        hub.on("userLeft", onLieft);
+        hub.on("userLeft", onLeft);
         hub.on("MessageReceived", onMessage);
 
         hub.onreconnecting(() => setStatus("connecting"));
@@ -108,7 +105,7 @@ export function useChatConnection({aesKeyB64} : UseChatConnectionOptions) {
            hub.off("Connected", onConnected);
             hub.off("Register", onRegister);
             hub.off("UserJoined", onJoined);
-            hub.off("userLeft", onLieft);
+            hub.off("UserLeft", onLeft);
             hub.off("MessageReceived", onMessage);
         };
     }, [aesKeyB64, appendMessage, appendSystem]);
@@ -127,7 +124,8 @@ export function useChatConnection({aesKeyB64} : UseChatConnectionOptions) {
             alert("you have to login to send a message");
             return;
         }
-        await hub.invoke("SendMessage", t);
+        const {ivB64, payloadB64} = await encryptAesGcm(t);
+        await hub.invoke("SendMessageEncrypted", ivB64, payloadB64);
     }, [registeredAs]);
 
 
