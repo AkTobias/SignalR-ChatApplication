@@ -10,8 +10,9 @@ from  SignalR-ChatApplication or SignalR-ChatApplication/Server
 run "dotnet dev-certs https --trust"
 
 ## Step 2 => run the server
-  1. Check the dev-certs run => "dotnet dev-certs https --check"
-  2. run => "dotnet restore"
+    1. Check the dev-certs run => "dotnet dev-certs https --check"
+    2. run => "dotnet restore"
+
   From the Server run => "dotnet run"
   From the repo root folder run => "dotnet run --Server"
 
