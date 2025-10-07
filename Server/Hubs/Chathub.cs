@@ -1,14 +1,8 @@
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using Server.Cryptography;
+//using Server.Cryptography;
 
 namespace SignalRChat.Hubs
 {
@@ -16,7 +10,6 @@ namespace SignalRChat.Hubs
     {
 
         private readonly byte[] _aesKey = Convert.FromBase64String("97ZBxEEvCz4ernqTAAmXAgtbERQu8N7RU+08XvR4Xe0=");
-
 
         private static readonly Regex usernameFormat =
             new(@"^[\p{L}\p{N} _\.\-]{1,32}$", RegexOptions.CultureInvariant);
@@ -37,7 +30,6 @@ namespace SignalRChat.Hubs
 
             Context.Items["username"] = username;
 
-
             await Clients.Caller.SendAsync("Register", username);
 
             await Clients.Others.SendAsync("UserJoined", username, Context.ConnectionId);
@@ -52,16 +44,19 @@ namespace SignalRChat.Hubs
             string plaintext;
             try
             {
-                plaintext = CryptoAes.Decrypt(ivB64, payloadB64, _aesKey);
+                plaintext = CryptoAesGcm.Decrypt(ivB64, payloadB64, _aesKey);
+            }
+            catch (FormatException)
+            {
+                throw new HubException("Invalid base64.");
+
             }
             catch (CryptographicException)
             {
                 throw new HubException("Invalid ciphertext or key.");
             }
 
-
-
-            var (outIvB64, outPayloadB64) = CryptoAes.Encrypt(plaintext, _aesKey);
+            var (outIvB64, outPayloadB64) = CryptoAesGcm.Encrypt(plaintext, _aesKey);
 
             await Clients.All.SendAsync("MessageReceived", user, outIvB64, outPayloadB64, DateTimeOffset.UtcNow);
         }
@@ -71,12 +66,11 @@ namespace SignalRChat.Hubs
         {
             await Clients.Caller.SendAsync("Connected", Context.ConnectionId);
 
-            var (ivB64, payloadB64) = CryptoAes.Encrypt("__AES_GCM_SELFTEST__", _aesKey);
+            var (ivB64, payloadB64) = CryptoAesGcm.Encrypt("__AES_GCM_SELFTEST__", _aesKey);
             await Clients.Caller.SendAsync("MessageReceived",
             "server", ivB64, payloadB64, DateTimeOffset.UtcNow);
             await base.OnConnectedAsync();
         }
-
 
         public override async Task OnDisconnectedAsync(Exception? exception)
         {

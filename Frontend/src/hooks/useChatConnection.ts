@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 //import { ChatMessage } from "../types/chatMessageType";
 import type {Message} from "../types/chatMessageType";
 import type { ConnectionStatus } from "../types/connectionStatusType";
-import { decryptAesGcmFromBase64, encryptAesGcm, initAesKeyFromBase64 } from "../crytoAes";
+import { decryptAesGcmFromBase64, encryptAesGcm, initAesKeyFromBase64 } from "../crytoAesGcm";
 import { ensureHubStarted, hub } from "../signalR";
 import * as signalR from "@microsoft/signalr";
 

@@ -7,9 +7,6 @@ using SignalRChat.Hubs;
 var builder = WebApplication.CreateBuilder(args);
 
 
-
-
-
 builder.WebHost.ConfigureKestrel(o =>
 {
     //o.ListenLocalhost(5172);
