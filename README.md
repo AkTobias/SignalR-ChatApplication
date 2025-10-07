@@ -12,9 +12,9 @@ run "dotnet dev-certs https --trust"
 ## Step 2 => run the server
   1. Check the dev-certs run => "dotnet dev-certs https --check"
   2. run => "dotnet restore"
-  3.1. From the Server
+  From the Server
       * run => "dotnet run"
-  3.2 From the repo root folder
+  From the repo root folder
       * run "dotnet run --Server"
 
 ## Step 3 => run the react-client
