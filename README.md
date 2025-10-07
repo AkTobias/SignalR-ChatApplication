@@ -14,10 +14,10 @@ run "dotnet dev-certs https --trust"
     2. run => "dotnet restore"
 
   From the Server run =>
-      *  "dotnet run"
+      "dotnet run"
 
   From the repo root folder run => 
-      *   "dotnet run --Server"
+      "dotnet run --Server"
 
 ## Step 3 => Run the react-client
       1. from root folder run => cd Frontend
