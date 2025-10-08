@@ -12,10 +12,6 @@ export default function RegisterForm({
 
    const handleRegister = async () => {
       try {
-         if (!name.trim()) {
-            alert("Enter a username first");
-            return;
-         }
          await onRegister(name);
       } catch (e: any) {
          alert(e?.message || String(e));
