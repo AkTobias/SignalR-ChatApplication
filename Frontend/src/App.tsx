@@ -13,7 +13,6 @@ function App() {
    const { status, connected, log, register, send } = useChatConnection({
       aesKeyB64: "97ZBxEEvCz4ernqTAAmXAgtbERQu8N7RU+08XvR4Xe0=",
    });
-   // check {registeredAs || null}
    return (
       <div className="chat-container">
          <div className="chat-header">

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 //import { ChatMessage } from "../types/chatMessageType";
 import type {Message} from "../types/chatMessageType";
 import type { ConnectionStatus } from "../types/connectionStatusType";
-import { decryptAesGcmFromBase64, encryptAesGcm, initAesKeyFromBase64 } from "../crytoAesGcm";
+import { decryptAesGcmFromBase64, encryptAesGcm, initAesKeyFromBase64 } from "../cryptoAesGcm";
 import { ensureHubStarted, hub } from "../signalR";
 import * as signalR from "@microsoft/signalr";
 
@@ -13,12 +13,24 @@ interface UseChatConnectionOptions {
     aesKeyB64 : string
 };
 
+/**
+ * A Custom made react hook that:
+ * 1. Establishes a SignlarR connection
+ * 2. Register event handlers (connected, users, join/leave, ecrypted message)
+ * 3. Manages local UI state (system status, checks who you're registered and chat-log )
+ * 4. Encrypts outgoing messages / decrypts incoming messages via AES-GCM
+ */
+
 
 export function useChatConnection({aesKeyB64} : UseChatConnectionOptions) {
+    //Connection lifecyle status for UI
     const [status, setStatus] = useState<ConnectionStatus>("connecting");
+    //Username the server accepted for this client
     const [registeredAs, setRegisteredAs] = useState<string | null>();
+    //append only chat log (system and chat message)
     const [log, setLog] = useState<Message[]>([]);
 
+    //Guard setState after unmount
     const mounted = useRef(true);
 
     const appendMessage = useCallback((m: Message) => {
@@ -71,19 +83,20 @@ export function useChatConnection({aesKeyB64} : UseChatConnectionOptions) {
             }
         };
 
-        //Activate handlers
+        //Wire up hub event handlers
         hub.on("Connected", onConnected);
         hub.on("Register", onRegister);
         hub.on("UserJoined", onJoined);
         hub.on("UserLeft", onLeft);
         hub.on("MessageReceived", onMessage);
 
+        //SignalR connection state changes
         hub.onreconnecting(() => setStatus("connecting"));
         hub.onreconnected(() => setStatus("connected"));
         hub.onclose(() => setStatus("disconnected"));
 
 
-        //Start connection + re-init AES key
+        //Start connection + re-init AES key before the message is sent
         (async () => {
             setStatus("connecting");
             try{
@@ -99,7 +112,7 @@ export function useChatConnection({aesKeyB64} : UseChatConnectionOptions) {
                 }
             }
         })();
-
+        // Cleanup: remove listners to prevent dupes and avoid setState after unmount
         return () => {
             mounted.current = false;
            hub.off("Connected", onConnected);
@@ -110,13 +123,18 @@ export function useChatConnection({aesKeyB64} : UseChatConnectionOptions) {
         };
     }, [aesKeyB64, appendMessage, appendSystem]);
 
-    //expose action that mirror original funcs
+    //Registers the current client with a username.
     const register = useCallback(async (name: string) => {
         const n = name.trim();
         if(!n) throw new Error("Enter a username first");
         await hub.invoke("Register", n);
     }, [])
 
+    /**
+     * Sends a chat message:
+     * - Before sending a message checks that you are registerd
+     * - Encrypts text with AES-GCM and sends IV + payload to the server.
+     */
     const send = useCallback(async (text: string) => {
         const t = text.trim();
         if(!t) return;
@@ -124,12 +142,13 @@ export function useChatConnection({aesKeyB64} : UseChatConnectionOptions) {
             alert("you have to login to send a message");
             return;
         }
+        //encrypts the message before its sent to the server
         const {ivB64, payloadB64} = await encryptAesGcm(t);
         await hub.invoke("SendMessageEncrypted", ivB64, payloadB64);
     }, [registeredAs]);
 
 
-    //double check.
+    // Public API of the hook for componets to consume
     return {
         status,
         connected: status === "connected",
