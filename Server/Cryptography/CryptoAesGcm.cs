@@ -6,6 +6,10 @@ namespace Server.Cryptography
 {
 
     /// <summary>
+    /// Using AES_GCM 
+    /// *It has Parallelzable operations which means it allows encryption and authentication blocks to be computed in 
+    /// parallel. This makes it suitable for low-tatency environments.
+    ///
     /// Helpers for sysematic encryption/decryption using AES-GCM
     /// - Uses a 12-byte IV per NIST (National Institute of Standards and Technology) recommendations.
     /// - Uses a 16-byte authentication tag (128-bit)
