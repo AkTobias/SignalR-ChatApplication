@@ -1,0 +1,67 @@
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+.chat-container {
+  max-width: 500px;
+  margin: 2rem auto;
+  font-family: sans-serif;
+  align-items: center;
+}
+.chat-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.status-pill {
+ display: inline-flex;
+ align-items: center;
+ gap: 1.5rem;
+ padding: 1rem 1rem;
+ border-radius: 999px;
+ color: #fff;
+ font-weight: 600;
+ font-size: 1rem;
+
+}
+.status-pill.is-disconnected { background: #dc2626; } 
+.status-pill.is-connecting   { background: #2563eb; } 
+.status-pill.is-connected    { background: #16a34a; } 
+
+.chat-log {
+  border: 1px solid black;
+  border-radius: 8px;
+  padding: 1rem;
+  height: 300px;
+  overflow-y: auto;
+  margin-bottom: 1rem;
+  background: rgb(226, 226, 229);
+}
+
+.chat-message {
+  color: black;
+  text-align: left;
+
+}
+
+.chat-message{
+  margin-bottom: 0.5rem;
+}
+.chat-sys{
+  color: red;
+}
+.btn{
+  background-color: blue;
+  margin-left: 1rem;
+}
+.chat-timestamp {
+  color: #140909;
+  margin-right: 0.5rem;
+}
+chat-empty {
+  color: #100d0d
+}

@@ -1,61 +1,80 @@
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.Encodings.Web;
-using System.Threading.Tasks;
+using System.Security.Cryptography;
+using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.SignalR;
+using Server.Cryptography;
+//using Server.Cryptography;
 
 namespace SignalRChat.Hubs
 {
     public class Chathub : Hub
     {
-        private const string UsernameKey = "username";
-        private static readonly HtmlEncoder Html = HtmlEncoder.Default;
+
+        private readonly byte[] _aesKey = Convert.FromBase64String("97ZBxEEvCz4ernqTAAmXAgtbERQu8N7RU+08XvR4Xe0=");
+
+        private static readonly Regex usernameFormat =
+            new(@"^[\p{L}\p{N} _\.\-]{1,32}$", RegexOptions.CultureInvariant);
+        public Chathub(byte[] aesKey)
+        {
+            _aesKey = aesKey;
+
+        }
+
 
         public async Task Register(string username)
         {
             username = (username ?? string.Empty).Trim();
-
-            if (string.IsNullOrWhiteSpace(username))
+            if (string.IsNullOrWhiteSpace(username) || !usernameFormat.IsMatch(username))
             {
-                throw new HubException("You have to enter username");
+                throw new HubException("You have to enter a valid username ");
             }
 
-            var safeName = Html.Encode(username);
+            Context.Items["username"] = username;
 
-            Context.Items[UsernameKey] = safeName;
+            await Clients.Caller.SendAsync("Register", username);
 
-            await Clients.Caller.SendAsync("Register", safeName);
-
-            await Clients.Others.SendAsync("UserJoined", safeName, Context.ConnectionId);
+            await Clients.Others.SendAsync("UserJoined", username, Context.ConnectionId);
 
         }
 
-        public async Task SendMessage(string message)
+        public async Task SendMessageEncrypted(string ivB64, string payloadB64)
         {
-            if (!Context.Items.TryGetValue(UsernameKey, out var userObj) || userObj is not string username)
+            if (!Context.Items.TryGetValue("username", out var userObj) || userObj is not string user)
+                throw new HubException("You have to enter a valid username if you want to send a message");
+
+            string plaintext;
+            try
             {
-                throw new HubException("Du måste ange användar namn innan du kan skriva");
+                plaintext = CryptoAesGcm.Decrypt(ivB64, payloadB64, _aesKey);
+            }
+            catch (FormatException)
+            {
+                throw new HubException("Invalid base64.");
+
+            }
+            catch (CryptographicException)
+            {
+                throw new HubException("Invalid ciphertext or key.");
             }
 
-            var safeMessage = Html.Encode(message ?? string.Empty);
+            var (outIvB64, outPayloadB64) = CryptoAesGcm.Encrypt(plaintext, _aesKey);
 
-            await Clients.All.SendAsync("MessageReceived", username, safeMessage, DateTimeOffset.UtcNow);
-
+            await Clients.All.SendAsync("MessageReceived", user, outIvB64, outPayloadB64, DateTimeOffset.UtcNow);
         }
+
 
         public override async Task OnConnectedAsync()
         {
             await Clients.Caller.SendAsync("Connected", Context.ConnectionId);
+
+            var (ivB64, payloadB64) = CryptoAesGcm.Encrypt("__AES_GCM_SELFTEST__", _aesKey);
+            await Clients.Caller.SendAsync("MessageReceived",
+            "server", ivB64, payloadB64, DateTimeOffset.UtcNow);
             await base.OnConnectedAsync();
         }
 
-
-
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
-            if (Context.Items.TryGetValue(UsernameKey, out var userObj) && userObj is string username)
+            if (Context.Items.TryGetValue("username", out var userObj) && userObj is string username)
             {
                 await Clients.Others.SendAsync("UserLeft", username, Context.ConnectionId);
             }
