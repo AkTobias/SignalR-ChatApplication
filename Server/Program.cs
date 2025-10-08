@@ -1,6 +1,7 @@
 using System.Text.Encodings.Web;
 using System.Text.Unicode;
 using Microsoft.AspNetCore.Http.Connections;
+using Microsoft.Extensions.DependencyInjection;
 using Server.Cryptography;
 using SignalRChat.Hubs;
 
@@ -17,7 +18,7 @@ builder.WebHost.ConfigureKestrel(o =>
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("dev", p => p
-        .WithOrigins("https://localhost:5173", "https://127.0.0.1:5173")
+        .WithOrigins("https://localhost:5173")
         .AllowAnyHeader()
         .AllowAnyMethod()
         .AllowCredentials()
@@ -25,13 +26,12 @@ builder.Services.AddCors(options =>
 });
 
 
-
-
 builder.Services.AddSignalR();
 
-//builder.Services.AddSingleton<CryptoAes>();
 builder.Services.AddSingleton<byte[]>(sp =>
-    Convert.FromBase64String("97ZBxEEvCz4ernqTAAmXAgtbERQu8N7RU+08XvR4Xe0="));
+    Convert.FromBase64String("97ZBxEEvCz4ernqTAAmXAgtbERQu8N7RU+08XvR4Xe0=")
+);
+
 
 var app = builder.Build();
 

@@ -39,7 +39,7 @@ body {
   height: 300px;
   overflow-y: auto;
   margin-bottom: 1rem;
-  background: rgb(226, 226, 229);
+  background: rgb(243, 243, 245);
 }
 
 .chat-message {
@@ -52,16 +52,22 @@ body {
   margin-bottom: 0.5rem;
 }
 .chat-sys{
-  color: red;
+  color: blue;
 }
 .btn{
   background-color: blue;
   margin-left: 1rem;
+  margin-bottom: 1rem;
 }
 .chat-timestamp {
   color: #140909;
   margin-right: 0.5rem;
 }
-chat-empty {
-  color: #100d0d
+.chat-empty {
+  color: #100d0d;
+  font-size: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
 }

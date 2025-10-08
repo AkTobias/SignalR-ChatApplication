@@ -16,14 +16,14 @@ export default function MessageList({ log }: { log: Message[] }) {
             m.kind === "system" ? (
                <div key={i} className="chat-sys">
                   <span className="chat-timespan">
-                     [{new Date(m.ts).toLocaleTimeString()}]
+                     [{new Date(m.timestamp).toLocaleTimeString()}]
                   </span>
                   <span>{m.message}</span>
                </div>
             ) : (
                <div key={i} className="chat-message">
                   <span className="chat-timespan">
-                     [{new Date(m.ts).toLocaleTimeString()}]
+                     [{new Date(m.timestamp).toLocaleTimeString()}]
                   </span>
                   <strong>{m.user}:</strong>
                   <span>{m.message}</span>

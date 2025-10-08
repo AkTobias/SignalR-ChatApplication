@@ -9,10 +9,12 @@ namespace SignalRChat.Hubs
     public class Chathub : Hub
     {
 
+
         private readonly byte[] _aesKey = Convert.FromBase64String("97ZBxEEvCz4ernqTAAmXAgtbERQu8N7RU+08XvR4Xe0=");
 
+        //Valid name a-z 
         private static readonly Regex usernameFormat =
-            new(@"^[\p{L}\p{N} _\.\-]{1,32}$", RegexOptions.CultureInvariant);
+            new(@"^[\p{L}\p{N} _\.\-]{2,20}$", RegexOptions.CultureInvariant);
         public Chathub(byte[] aesKey)
         {
             _aesKey = aesKey;
@@ -66,9 +68,11 @@ namespace SignalRChat.Hubs
         {
             await Clients.Caller.SendAsync("Connected", Context.ConnectionId);
 
+            /*
             var (ivB64, payloadB64) = CryptoAesGcm.Encrypt("__AES_GCM_SELFTEST__", _aesKey);
             await Clients.Caller.SendAsync("MessageReceived",
             "server", ivB64, payloadB64, DateTimeOffset.UtcNow);
+            */
             await base.OnConnectedAsync();
         }
 
