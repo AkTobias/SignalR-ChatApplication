@@ -28,7 +28,8 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddSignalR();
 
-builder.Services.AddSingleton<byte[]>(sp =>
+//32 the key is 32 bytes, => a 256 bit-key
+builder.Services.AddSingleton(sp =>
     Convert.FromBase64String("97ZBxEEvCz4ernqTAAmXAgtbERQu8N7RU+08XvR4Xe0=")
 );
 
@@ -42,6 +43,6 @@ app.UseDefaultFiles();
 app.UseStaticFiles();
 
 app.MapHub<Chathub>("/chathub");
-app.MapGet("/health", () => "OK");
+//app.MapGet("/health", () => "OK");
 
 app.Run();

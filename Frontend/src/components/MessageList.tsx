@@ -5,6 +5,12 @@ import "../App.css";
 export default function MessageList({ log }: { log: Message[] }) {
    const endRef = useRef<HTMLDivElement | null>(null);
 
+   /* 
+   function escapeHtml(unsafe: string): string {
+      return unsafe.replace(/</g, "&lt;");
+   }
+      */
+
    useEffect(() => {
       endRef.current?.scrollIntoView({ behavior: "smooth" });
    }, [log]);

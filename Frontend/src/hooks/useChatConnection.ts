@@ -9,7 +9,13 @@ interface UseChatConnectionOptions {
     aesKeyB64 : string
 };
 
-const USERNAME_REGEX = /^[\p{L}\p{N} _\.\-]{2,20}$/u;
+/**
+ * Matches the Chathubs name format
+ *  - Must be between 2 and 25 chars (both letters and numbers)
+ *  - No blank spaces, 
+ *  - only _ . and - are allowed symbols
+ */
+const USERNAME_REGEX = /^[\p{L}\p{N}_\.\-]{2,25}$/u;
 
 /**
  * Custom React Hook to manage encrypted SignalR chat.
@@ -143,19 +149,33 @@ export function useChatConnection({aesKeyB64} : UseChatConnectionOptions) {
             appendSystem(" Enter a username first");
             return;
         };
+        
         if(!USERNAME_REGEX.test(n)){
-            appendSystem(" Username must be between 2 and 20 chars and only use letters, numbers, _ , . , _ or -");
+            appendSystem(" Username must be between 2 and 25 chars and only use letters, no blank space , numbers, _ , . , -");
             return;
         
         }
         try{
             await hub.invoke("Register", n);
-            } catch (e: any){
-                const msg = e?.message ?? " Registration  failed";
-                throw new Error(msg);
-            }
+            } catch (err: any){
+                const msg = (err?.message ?? String(err) ?? "").toString();
 
-    }, [])
+                if (/already registered/i.test(msg)) {
+                appendSystem("You're already registered on this connection.");
+                return;
+                }
+
+                if(/already taken/i.test(msg))
+                {
+                    appendSystem("Username already in use on this connection");
+                    return;
+                }
+
+
+                appendSystem(`Registration failed: ${msg || "unknown error"}`);
+            } 
+
+    }, [hub, appendSystem]);
 
     /**
      * Sends a chat message:

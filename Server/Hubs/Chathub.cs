@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.SignalR;
@@ -9,12 +10,18 @@ namespace SignalRChat.Hubs
     public class Chathub : Hub
     {
 
+        // 
+        private readonly byte[] _aesKey;
 
-        private readonly byte[] _aesKey = Convert.FromBase64String("97ZBxEEvCz4ernqTAAmXAgtbERQu8N7RU+08XvR4Xe0=");
-
-        //Valid name a-z 
         private static readonly Regex usernameFormat =
-            new(@"^[\p{L}\p{N} _\.\-]{2,20}$", RegexOptions.CultureInvariant);
+            new(@"^[\p{L}\p{N}_\.\-]{2,25}$", RegexOptions.CultureInvariant);
+
+        //track usernames globally (case-insensitive)
+        private static readonly ConcurrentDictionary<string, byte> Username =
+        new(StringComparer.OrdinalIgnoreCase);
+
+        private const string usernameKey = "username";
+
         public Chathub(byte[] aesKey)
         {
             _aesKey = aesKey;
@@ -25,12 +32,24 @@ namespace SignalRChat.Hubs
         public async Task Register(string username)
         {
             username = (username ?? string.Empty).Trim();
+
             if (string.IsNullOrWhiteSpace(username) || !usernameFormat.IsMatch(username))
             {
-                throw new HubException("You have to enter a valid username ");
+                throw new HubException("You have to enter a valid username.");
             }
 
-            Context.Items["username"] = username;
+            if (Context.Items.ContainsKey(usernameKey))
+            {
+                throw new HubException("Already registered");
+            }
+
+            if (!Username.TryAdd(username, 0))
+            {
+                throw new HubException("Username already taken");
+            }
+
+
+            Context.Items[usernameKey] = username;
 
             await Clients.Caller.SendAsync("Register", username);
 
@@ -68,11 +87,6 @@ namespace SignalRChat.Hubs
         {
             await Clients.Caller.SendAsync("Connected", Context.ConnectionId);
 
-            /*
-            var (ivB64, payloadB64) = CryptoAesGcm.Encrypt("__AES_GCM_SELFTEST__", _aesKey);
-            await Clients.Caller.SendAsync("MessageReceived",
-            "server", ivB64, payloadB64, DateTimeOffset.UtcNow);
-            */
             await base.OnConnectedAsync();
         }
 
@@ -80,6 +94,7 @@ namespace SignalRChat.Hubs
         {
             if (Context.Items.TryGetValue("username", out var userObj) && userObj is string username)
             {
+                Username.TryRemove(username, out _);
                 await Clients.Others.SendAsync("UserLeft", username, Context.ConnectionId);
             }
             await base.OnDisconnectedAsync(exception);
