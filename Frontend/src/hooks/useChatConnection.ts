@@ -5,12 +5,13 @@ import { decryptAesGcmFromBase64, encryptAesGcm, initAesKeyFromBase64 } from "..
 import { ensureHubstarted, hub } from "../signalR";
 import * as signalR from "@microsoft/signalr";
 
+
 interface UseChatConnectionOptions {
     aesKeyB64 : string
 };
 
 /**
- * Matches the Chathubs name format
+ * Matches the Chathub's  format
  *  - Must be between 2 and 25 chars (both letters and numbers)
  *  - No blank spaces, 
  *  - only _ . and - are allowed symbols
@@ -80,6 +81,7 @@ export function useChatConnection({aesKeyB64} : UseChatConnectionOptions) {
         const onLeft = (safeName: string) => {
             appendSystem(` ${safeName} has left the chat.`)
         }
+       
         
         const onMessage = async (
             user: string,
@@ -159,20 +161,18 @@ export function useChatConnection({aesKeyB64} : UseChatConnectionOptions) {
             await hub.invoke("Register", n);
             } catch (err: any){
                 const msg = (err?.message ?? String(err) ?? "").toString();
-
-                if (/already registered/i.test(msg)) {
-                appendSystem("You're already registered on this connection.");
+                
+               if(/already taken/i.test(msg)){
+                appendSystem("Username already taken on this connection");
                 return;
-                }
+               }
 
-                if(/already taken/i.test(msg))
-                {
-                    appendSystem("Username already in use on this connection");
-                    return;
-                }
+               if(/Already registered/i.test(msg)){
+                appendSystem("Username already on this connection")
+                return;
+               }
+                
 
-
-                appendSystem(`Registration failed: ${msg || "unknown error"}`);
             } 
 
     }, [hub, appendSystem]);
@@ -193,6 +193,20 @@ export function useChatConnection({aesKeyB64} : UseChatConnectionOptions) {
         await hub.invoke("SendMessageEncrypted", ivB64, payloadB64);
     }, [registeredAs]);
 
+    const logout = useCallback(async () => {
+        await hub.stop();
+        setRegisteredAs(null);
+        setChatLog([]);
+        setStatus("disconnected")
+
+        try{
+            await ensureHubstarted();
+            setStatus("connected");
+        } catch(e: any){
+            appendSystem(`Failed to reconnect after logout: ${e?.message ?? e}`);
+        }
+    }, [appendSystem]);
+
 
     // Public API of the hook for componets to consume
     return {
@@ -202,5 +216,6 @@ export function useChatConnection({aesKeyB64} : UseChatConnectionOptions) {
         chatLog,
         register,
         send,
+        logout
     } as const
 }

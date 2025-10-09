@@ -16,7 +16,7 @@ namespace SignalRChat.Hubs
         private static readonly Regex usernameFormat =
             new(@"^[\p{L}\p{N}_\.\-]{2,25}$", RegexOptions.CultureInvariant);
 
-        //track usernames globally (case-insensitive)
+        //track usernames globally on the server (case-insensitive)
         private static readonly ConcurrentDictionary<string, byte> Username =
         new(StringComparer.OrdinalIgnoreCase);
 
@@ -47,7 +47,6 @@ namespace SignalRChat.Hubs
             {
                 throw new HubException("Username already taken");
             }
-
 
             Context.Items[usernameKey] = username;
 
@@ -95,9 +94,26 @@ namespace SignalRChat.Hubs
             if (Context.Items.TryGetValue("username", out var userObj) && userObj is string username)
             {
                 Username.TryRemove(username, out _);
+
                 await Clients.Others.SendAsync("UserLeft", username, Context.ConnectionId);
             }
             await base.OnDisconnectedAsync(exception);
         }
+
+        public async Task Logout()
+        {
+            if (Context.Items.TryGetValue("username", out var userObj) && userObj is string username)
+            {
+                Context.Items.Remove(usernameKey);
+                Username.TryRemove(username, out _);
+
+
+                await Clients.Caller.SendAsync("Register", null);
+                await Clients.Others.SendAsync("UserLeft", username, Context.ConnectionId);
+            }
+
+
+        }
+
     }
 }
