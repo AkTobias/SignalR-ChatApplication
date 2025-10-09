@@ -7,8 +7,8 @@ namespace Server.Cryptography
 
     /// <summary>
     /// Using AES-256-GCM (a 32 byte key) 
-    /// I choose GCM (Galois/Counter Mode) because it can process data blocks simultaneously, 
-    /// which makes it very fast. 
+    /// I choose GCM (Galois/Counter Mode) because it can process data blocks simultaneously.
+    /// Which makes it perfect for low-latency applications.
     /// </summary>
 
     public sealed class CryptoAesGcm

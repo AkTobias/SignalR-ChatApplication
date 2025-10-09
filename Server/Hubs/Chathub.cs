@@ -20,7 +20,7 @@ namespace SignalRChat.Hubs
         private static readonly ConcurrentDictionary<string, byte> Username =
         new(StringComparer.OrdinalIgnoreCase);
 
-        private const string usernameKey = "username";
+        private const string UsernameKey = "username";
 
         public Chathub(byte[] aesKey)
         {
@@ -38,7 +38,7 @@ namespace SignalRChat.Hubs
                 throw new HubException("You have to enter a valid username.");
             }
 
-            if (Context.Items.ContainsKey(usernameKey))
+            if (Context.Items.ContainsKey(UsernameKey))
             {
                 throw new HubException("Already registered");
             }
@@ -48,7 +48,7 @@ namespace SignalRChat.Hubs
                 throw new HubException("Username already taken");
             }
 
-            Context.Items[usernameKey] = username;
+            Context.Items[UsernameKey] = username;
 
             await Clients.Caller.SendAsync("Register", username);
 
@@ -58,7 +58,7 @@ namespace SignalRChat.Hubs
 
         public async Task SendMessageEncrypted(string ivB64, string payloadB64)
         {
-            if (!Context.Items.TryGetValue("username", out var userObj) || userObj is not string user)
+            if (!Context.Items.TryGetValue(UsernameKey, out var userObj) || userObj is not string user)
                 throw new HubException("You have to enter a valid username if you want to send a message");
 
             string plaintext;
@@ -91,8 +91,9 @@ namespace SignalRChat.Hubs
 
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
-            if (Context.Items.TryGetValue("username", out var userObj) && userObj is string username)
+            if (Context.Items.TryGetValue(UsernameKey, out var userObj) && userObj is string username)
             {
+                Context.Items.Remove(UsernameKey);
                 Username.TryRemove(username, out _);
 
                 await Clients.Others.SendAsync("UserLeft", username, Context.ConnectionId);
@@ -104,7 +105,7 @@ namespace SignalRChat.Hubs
         {
             if (Context.Items.TryGetValue("username", out var userObj) && userObj is string username)
             {
-                Context.Items.Remove(usernameKey);
+                Context.Items.Remove(UsernameKey);
                 Username.TryRemove(username, out _);
 
 

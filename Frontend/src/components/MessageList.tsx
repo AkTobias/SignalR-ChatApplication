@@ -10,7 +10,7 @@ export default function MessageList({ log }: { log: Message[] }) {
       return unsafe.replace(/</g, "&lt;");
    }
       */
-
+   //Guard against xss, react auto-escapes any value thats insode of a TSX {m.user}, {m.message}
    useEffect(() => {
       endRef.current?.scrollIntoView({ behavior: "smooth" });
    }, [log]);
