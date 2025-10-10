@@ -5,12 +5,7 @@ import "../App.css";
 export default function MessageList({ log }: { log: Message[] }) {
    const endRef = useRef<HTMLDivElement | null>(null);
 
-   /* 
-   function escapeHtml(unsafe: string): string {
-      return unsafe.replace(/</g, "&lt;");
-   }
-      */
-   //Guard against xss, react auto-escapes any value thats insode of a TSX {m.user}, {m.message}
+   //Guard against xss, react auto-escapes any value thats inside of a TSX {m.user}, {m.message}
    useEffect(() => {
       endRef.current?.scrollIntoView({ behavior: "smooth" });
    }, [log]);
@@ -36,6 +31,7 @@ export default function MessageList({ log }: { log: Message[] }) {
                </div>
             )
          )}
+
          <div ref={endRef} />
       </div>
    );

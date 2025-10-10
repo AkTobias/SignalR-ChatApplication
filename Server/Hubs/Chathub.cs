@@ -108,7 +108,6 @@ namespace SignalRChat.Hubs
                 Context.Items.Remove(UsernameKey);
                 Username.TryRemove(username, out _);
 
-
                 await Clients.Caller.SendAsync("Register", null);
                 await Clients.Others.SendAsync("UserLeft", username, Context.ConnectionId);
             }
