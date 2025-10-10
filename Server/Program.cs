@@ -7,10 +7,9 @@ using SignalRChat.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
+//Binds Kestrel to localhost:5001 over HTTPS
 builder.WebHost.ConfigureKestrel(o =>
 {
-    //o.ListenLocalhost(5172);
     o.ListenLocalhost(5001, o => o.UseHttps());
 });
 
@@ -28,7 +27,9 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddSignalR();
 
-builder.Services.AddSingleton<byte[]>(sp =>
+//32 the key is 32 bytes, => a 256 bit-key
+//Register my AES-key so it can be constructor-injected.
+builder.Services.AddSingleton(sp =>
     Convert.FromBase64String("97ZBxEEvCz4ernqTAAmXAgtbERQu8N7RU+08XvR4Xe0=")
 );
 
@@ -42,6 +43,6 @@ app.UseDefaultFiles();
 app.UseStaticFiles();
 
 app.MapHub<Chathub>("/chathub");
-app.MapGet("/health", () => "OK");
+//app.MapGet("/health", () => "OK");
 
 app.Run();

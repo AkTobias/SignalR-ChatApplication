@@ -5,11 +5,18 @@ import { decryptAesGcmFromBase64, encryptAesGcm, initAesKeyFromBase64 } from "..
 import { ensureHubstarted, hub } from "../signalR";
 import * as signalR from "@microsoft/signalr";
 
+
 interface UseChatConnectionOptions {
     aesKeyB64 : string
 };
 
-const USERNAME_REGEX = /^[\p{L}\p{N} _\.\-]{2,20}$/u;
+/**
+ * Matches the Chathub's  format
+ *  - Must be between 2 and 25 chars (both letters and numbers)
+ *  - No blank spaces, 
+ *  - only _ . and - are allowed symbols
+ */
+const USERNAME_REGEX = /^[\p{L}\p{N}_\.\-]{2,25}$/u;
 
 /**
  * Custom React Hook to manage encrypted SignalR chat.
@@ -74,6 +81,7 @@ export function useChatConnection({aesKeyB64} : UseChatConnectionOptions) {
         const onLeft = (safeName: string) => {
             appendSystem(` ${safeName} has left the chat.`)
         }
+       
         
         const onMessage = async (
             user: string,
@@ -143,19 +151,31 @@ export function useChatConnection({aesKeyB64} : UseChatConnectionOptions) {
             appendSystem(" Enter a username first");
             return;
         };
+        
         if(!USERNAME_REGEX.test(n)){
-            appendSystem(" Username must be between 2 and 20 chars and only use letters, numbers, _ , . , _ or -");
+            appendSystem(" Username must be between 2 and 25 chars and only use letters, no blank space , numbers, _ , . , -");
             return;
         
         }
         try{
             await hub.invoke("Register", n);
-            } catch (e: any){
-                const msg = e?.message ?? " Registration  failed";
-                throw new Error(msg);
-            }
+            } catch (err: any){
+                const msg = (err?.message ?? String(err) ?? "").toString();
+                
+               if(/already taken/i.test(msg)){
+                appendSystem("Username already taken on this connection");
+                return;
+               }
 
-    }, [])
+               if(/Already registered/i.test(msg)){
+                appendSystem("Username already on this connection")
+                return;
+               }
+                
+
+            } 
+
+    }, [hub, appendSystem]);
 
     /**
      * Sends a chat message:
@@ -173,6 +193,20 @@ export function useChatConnection({aesKeyB64} : UseChatConnectionOptions) {
         await hub.invoke("SendMessageEncrypted", ivB64, payloadB64);
     }, [registeredAs]);
 
+    const logout = useCallback(async () => {
+        await hub.stop();
+        setRegisteredAs(null);
+        setChatLog([]);
+        setStatus("disconnected")
+
+        try{
+            await ensureHubstarted();
+            setStatus("connected");
+        } catch(e: any){
+            appendSystem(`Failed to reconnect after logout: ${e?.message ?? e}`);
+        }
+    }, [appendSystem]);
+
 
     // Public API of the hook for componets to consume
     return {
@@ -182,5 +216,6 @@ export function useChatConnection({aesKeyB64} : UseChatConnectionOptions) {
         chatLog,
         register,
         send,
+        logout
     } as const
 }

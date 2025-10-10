@@ -6,9 +6,10 @@ import RegisterForm from "./components/registerForm";
 import ChatInputRow from "./components/chatInputRow";
 
 function App() {
-   const { status, connected, chatLog, register, send } = useChatConnection({
-      aesKeyB64: "97ZBxEEvCz4ernqTAAmXAgtbERQu8N7RU+08XvR4Xe0=",
-   });
+   const { status, connected, chatLog, register, send, logout } =
+      useChatConnection({
+         aesKeyB64: "97ZBxEEvCz4ernqTAAmXAgtbERQu8N7RU+08XvR4Xe0=",
+      });
    return (
       <div className="chat-container">
          <div className="chat-header">
@@ -18,7 +19,11 @@ function App() {
          </div>
 
          <div className="chat-row">
-            <RegisterForm onRegister={register} connected={connected} />
+            <RegisterForm
+               onRegister={register}
+               connected={connected}
+               onLogout={logout}
+            />
          </div>
 
          <MessageList log={chatLog} />
