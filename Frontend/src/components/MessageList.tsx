@@ -31,7 +31,6 @@ export default function MessageList({ log }: { log: Message[] }) {
                </div>
             )
          )}
-
          <div ref={endRef} />
       </div>
    );

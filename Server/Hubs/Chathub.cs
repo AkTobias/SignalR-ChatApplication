@@ -91,7 +91,7 @@ namespace SignalRChat.Hubs
 
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
-            if (Context.Items.TryGetValue(UsernameKey, out var userObj) && userObj is string username)
+            if (Context.Items.TryGetValue("username", out var userObj) && userObj is string username)
             {
                 Context.Items.Remove(UsernameKey);
                 Username.TryRemove(username, out _);
