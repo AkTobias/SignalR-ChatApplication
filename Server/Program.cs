@@ -1,15 +1,15 @@
 using System.Text.Encodings.Web;
 using System.Text.Unicode;
 using Microsoft.AspNetCore.Http.Connections;
+using Microsoft.Extensions.DependencyInjection;
 using Server.Cryptography;
 using SignalRChat.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
+//Binds Kestrel to localhost:5001 over HTTPS
 builder.WebHost.ConfigureKestrel(o =>
 {
-    //o.ListenLocalhost(5172);
     o.ListenLocalhost(5001, o => o.UseHttps());
 });
 
@@ -17,7 +17,7 @@ builder.WebHost.ConfigureKestrel(o =>
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("dev", p => p
-        .WithOrigins("https://localhost:5173", "https://127.0.0.1:5173")
+        .WithOrigins("https://localhost:5173")
         .AllowAnyHeader()
         .AllowAnyMethod()
         .AllowCredentials()
@@ -25,13 +25,14 @@ builder.Services.AddCors(options =>
 });
 
 
-
-
 builder.Services.AddSignalR();
 
-//builder.Services.AddSingleton<CryptoAes>();
-builder.Services.AddSingleton<byte[]>(sp =>
-    Convert.FromBase64String("97ZBxEEvCz4ernqTAAmXAgtbERQu8N7RU+08XvR4Xe0="));
+//32 the key is 32 bytes, => a 256 bit-key
+//Register my AES-key so it can be constructor-injected.
+builder.Services.AddSingleton(sp =>
+    Convert.FromBase64String("97ZBxEEvCz4ernqTAAmXAgtbERQu8N7RU+08XvR4Xe0=")
+);
+
 
 var app = builder.Build();
 
@@ -42,6 +43,6 @@ app.UseDefaultFiles();
 app.UseStaticFiles();
 
 app.MapHub<Chathub>("/chathub");
-app.MapGet("/health", () => "OK");
+//app.MapGet("/health", () => "OK");
 
 app.Run();

@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.SignalR;
@@ -9,10 +10,18 @@ namespace SignalRChat.Hubs
     public class Chathub : Hub
     {
 
-        private readonly byte[] _aesKey = Convert.FromBase64String("97ZBxEEvCz4ernqTAAmXAgtbERQu8N7RU+08XvR4Xe0=");
+        // 
+        private readonly byte[] _aesKey;
 
         private static readonly Regex usernameFormat =
-            new(@"^[\p{L}\p{N} _\.\-]{1,32}$", RegexOptions.CultureInvariant);
+            new(@"^[\p{L}\p{N}_\.\-]{2,25}$", RegexOptions.CultureInvariant);
+
+        //track usernames globally on the server (case-insensitive)
+        private static readonly ConcurrentDictionary<string, byte> Username =
+        new(StringComparer.OrdinalIgnoreCase);
+
+        private const string UsernameKey = "username";
+
         public Chathub(byte[] aesKey)
         {
             _aesKey = aesKey;
@@ -23,12 +32,23 @@ namespace SignalRChat.Hubs
         public async Task Register(string username)
         {
             username = (username ?? string.Empty).Trim();
+
             if (string.IsNullOrWhiteSpace(username) || !usernameFormat.IsMatch(username))
             {
-                throw new HubException("You have to enter a valid username ");
+                throw new HubException("You have to enter a valid username.");
             }
 
-            Context.Items["username"] = username;
+            if (Context.Items.ContainsKey(UsernameKey))
+            {
+                throw new HubException("Already registered");
+            }
+
+            if (!Username.TryAdd(username, 0))
+            {
+                throw new HubException("Username already taken");
+            }
+
+            Context.Items[UsernameKey] = username;
 
             await Clients.Caller.SendAsync("Register", username);
 
@@ -38,7 +58,7 @@ namespace SignalRChat.Hubs
 
         public async Task SendMessageEncrypted(string ivB64, string payloadB64)
         {
-            if (!Context.Items.TryGetValue("username", out var userObj) || userObj is not string user)
+            if (!Context.Items.TryGetValue(UsernameKey, out var userObj) || userObj is not string user)
                 throw new HubException("You have to enter a valid username if you want to send a message");
 
             string plaintext;
@@ -66,19 +86,34 @@ namespace SignalRChat.Hubs
         {
             await Clients.Caller.SendAsync("Connected", Context.ConnectionId);
 
-            var (ivB64, payloadB64) = CryptoAesGcm.Encrypt("__AES_GCM_SELFTEST__", _aesKey);
-            await Clients.Caller.SendAsync("MessageReceived",
-            "server", ivB64, payloadB64, DateTimeOffset.UtcNow);
             await base.OnConnectedAsync();
         }
 
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
-            if (Context.Items.TryGetValue("username", out var userObj) && userObj is string username)
+            if (Context.Items.TryGetValue(UsernameKey, out var userObj) && userObj is string username)
             {
+                Context.Items.Remove(UsernameKey);
+                Username.TryRemove(username, out _);
+
                 await Clients.Others.SendAsync("UserLeft", username, Context.ConnectionId);
             }
             await base.OnDisconnectedAsync(exception);
         }
+
+        public async Task Logout()
+        {
+            if (Context.Items.TryGetValue(UsernameKey, out var userObj) && userObj is string username)
+            {
+                Context.Items.Remove(UsernameKey);
+                Username.TryRemove(username, out _);
+
+                await Clients.Caller.SendAsync("Register", null);
+                await Clients.Others.SendAsync("UserLeft", username, Context.ConnectionId);
+            }
+
+
+        }
+
     }
 }

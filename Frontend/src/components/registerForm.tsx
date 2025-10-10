@@ -4,19 +4,25 @@ import "../App.css";
 export default function RegisterForm({
    onRegister,
    connected,
+   onLogout,
 }: {
    onRegister: (name: string) => Promise<void> | void;
+   onLogout: () => Promise<void> | void;
    connected: boolean;
 }) {
    const [name, setName] = useState("");
 
    const handleRegister = async () => {
       try {
-         if (!name.trim()) {
-            alert("Enter a username first");
-            return;
-         }
          await onRegister(name);
+      } catch (e: any) {
+         alert(e?.message || String(e));
+      }
+   };
+
+   const handleLogout = async () => {
+      try {
+         await onLogout();
       } catch (e: any) {
          alert(e?.message || String(e));
       }
@@ -32,6 +38,9 @@ export default function RegisterForm({
          />
          <button className="btn" onClick={handleRegister} disabled={!connected}>
             Register
+         </button>
+         <button className="btn" onClick={handleLogout}>
+            Logout
          </button>
       </div>
    );
